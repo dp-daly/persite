@@ -79,13 +79,25 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Set up database
+      - name: Wait for PostgreSQL to be ready
         run: |
-          # Wait for PostgreSQL to be ready
-          until pg_isready -h localhost -U postgres; do
-            echo "Waiting for PostgreSQL to be ready..."
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..30}; do
+            if pg_isready -h localhost -U postgres; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL to be ready... Attempt $i of 30"
             sleep 2
           done
+          if [ $i -eq 30 ]; then
+            echo "PostgreSQL did not become ready in time"
+            exit 1
+          fi
+
+      - name: Set up database
+        run: |
+          export DATABASE_URL=postgres://postgres:postgres@localhost:5432/persite_test
           bin/rails db:prepare
           bin/rails db:create
 
