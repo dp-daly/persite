@@ -68,6 +68,6 @@ group :development, :test do
   gem "rspec-rails", "~> 7.0.0"
 end
 
-gem "shoulda-matchers", "~> 5.0"
+gem "shoulda-matchers", "~> 6.4"
 
 gem "css-zero", "~> 1.1"
